@@ -1,0 +1,11 @@
+Name,Excitation range,Excitation filter mode,Excitation range values,Dichromatic mirror,Suppression filter mode,Suppression range values
+   A,              uv,                    bp,                340-380,               400,                     lp,                     425
+  A4,              uv,                    bp,                 360/40,               400,                     bp,                  470/40
+   D,       uv+violet,                    bp,                355-425,               455,                     lp,                     470
+  E4,            blue,                    bp,                  436/7,               455,                     lp,                     470
+  H3,     violet+blue,                    bp,                420-490,               510,                     lp,                     515
+  I3,            blue,                    bp,                450-490,               510,                     lp,                     515
+  K3,            blue,                    bp,                470-490,               510,                     lp,                     515
+  L5,            blue,                    bp,                 480/40,               505,                     bp,                  527/30
+  M2,           green,                    bp,                 546/14,               580,                     lp,                     590
+N2.1,           green,                    bp,                515-560,               580,                     lp,                     590
