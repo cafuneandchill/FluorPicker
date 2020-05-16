@@ -1,14 +1,30 @@
 import csv
 
+
+class Fluor:
+    def __init__(self, name, ex, emi):
+        self.name = name
+        self.ex = ex
+        self.emi = emi
+        self.fitting_cubes = []
+
+    def add_fitting_cube(self, c):
+        self.fitting_cubes.append(c)
+
+    def __repr__(self):
+        return f'{self.name}, {self.ex}, {self.emi}'
+
+
 try:
     csvfluors = open('fluors.csv', newline='')
 except OSError as error:
     print(error)
 else:
     fluor_reader = csv.DictReader(csvfluors, skipinitialspace=True)
-    fitting_cubes = []
+    fluors = []
 
     for fluor in fluor_reader:
+        fl = Fluor(*fluor.values())
         with open('cubes.csv', newline='') as csvcubes:
             cube_reader = csv.DictReader(csvcubes, skipinitialspace=True)
             for cube in cube_reader:
@@ -30,15 +46,20 @@ else:
                 elif cube['Suppression filter mode'] == 'lp':
                     supmin = int(cube_sup_range)
 
-                # if
-
                 if (exmin <= float(fluor['Excitation wavelength']) <= exmax
                         and float(fluor['Excitation wavelength']) < float(cube['Dichromatic mirror']) < float(
                             fluor['Emission wavelength'])
                         and (supmin <= float(fluor['Emission wavelength']) <= supmax or supmin <= float(
                             fluor['Emission wavelength']))):
-                    fitting_cubes.append(cube)
+                    fl.add_fitting_cube(cube)
+        fluors.append(fl)
 
     print('Fitting cubes:')
-    for cube in fitting_cubes:
-        print('{}, {}, {}, {}, {}, {}, {}'.format(*cube.values()))
+    print('---------------------------------------')
+    for fluor in fluors:
+        print(f'For {fluor.name} [{fluor.ex}, {fluor.emi}]:')
+        for cube in fluor.fitting_cubes:
+            print(' - {}, {}, {}, {}, {}, {}, {}'.format(*cube.values()))
+        print('---------------------------------------')
+finally:
+    del csvfluors, csvcubes
