@@ -15,18 +15,23 @@ class Fluor:
         return f'{self.name}, {self.ex}, {self.emi}'
 
 
-try:
-    csvfluors = open('fluors.csv', newline='')
-except OSError as error:
-    print(error)
-else:
-    fluor_reader = csv.DictReader(csvfluors, skipinitialspace=True)
-    fluors = []
+class WrongFileTypeError(Exception):
+    pass
 
-    for fluor in fluor_reader:
-        fl = Fluor(*fluor.values())
-        with open('cubes.csv', newline='') as csvcubes:
-            cube_reader = csv.DictReader(csvcubes, skipinitialspace=True)
+
+cubes_file = 'cubes.csv'
+fluors_file = 'fluors.csv'
+
+fluors = []
+
+try:
+    with open(cubes_file, newline='') as csvcubes, open(fluors_file, newline='') as csvfluors:
+        if not cubes_file.endswith('.csv') or not fluors_file.endswith('.csv'):
+            raise WrongFileTypeError
+        fluor_reader = csv.DictReader(csvfluors, skipinitialspace=True)
+        cube_reader = csv.DictReader(csvcubes, skipinitialspace=True)
+        for fluor in fluor_reader:
+            fl = Fluor(*fluor.values())
             for cube in cube_reader:
                 cube_exc_range = cube['Excitation range values']
                 cube_sup_range = cube['Suppression range values']
@@ -52,8 +57,12 @@ else:
                         and (supmin <= float(fluor['Emission wavelength']) <= supmax or supmin <= float(
                             fluor['Emission wavelength']))):
                     fl.add_fitting_cube(cube)
-        fluors.append(fl)
-
+            fluors.append(fl)
+except OSError as error:
+    print(error)
+except WrongFileTypeError:
+    print('Error: one of the input files is not a CSV file')
+else:
     print('Fitting cubes:')
     print('---------------------------------------')
     for fluor in fluors:
@@ -61,5 +70,3 @@ else:
         for cube in fluor.fitting_cubes:
             print(' - {}, {}, {}, {}, {}, {}, {}'.format(*cube.values()))
         print('---------------------------------------')
-finally:
-    del csvfluors, csvcubes
